@@ -573,6 +573,7 @@ static void quitQtAndroidPlugin(JNIEnv *env, jclass /*clazz*/)
 
 static void terminateQt(JNIEnv *env, jclass /*clazz*/)
 {
+    QCoreApplication::exit();
     // QAndroidEventDispatcherStopper is stopped when the user uses the task manager to kill the application
     if (QAndroidEventDispatcherStopper::instance()->stopped()) {
         QAndroidEventDispatcherStopper::instance()->startAll();
@@ -583,7 +584,6 @@ static void terminateQt(JNIEnv *env, jclass /*clazz*/)
     sem_wait(&m_terminateSemaphore);
     sem_destroy(&m_terminateSemaphore);
 
-    env->DeleteGlobalRef(m_applicationClass);
     env->DeleteGlobalRef(m_classLoaderObject);
     if (m_resourcesObj)
         env->DeleteGlobalRef(m_resourcesObj);

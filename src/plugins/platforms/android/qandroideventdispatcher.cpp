@@ -44,6 +44,7 @@
 QAndroidEventDispatcher::QAndroidEventDispatcher(QObject *parent) :
     QUnixEventDispatcherQPA(parent)
 {
+    m_semaphore.release(1);
     if (QtAndroid::blockEventLoopsWhenSuspended())
         QAndroidEventDispatcherStopper::instance()->addEventDispatcher(this);
 }
@@ -60,7 +61,8 @@ void QAndroidEventDispatcher::start()
 {
     int prevState = m_stopRequest.fetchAndStoreAcquire(Running);
     if (prevState == Stopping) {
-        m_semaphore.release();
+        if (m_semaphore.available() == 0)
+            m_semaphore.release();
         wakeUp();
     } else if (prevState == Running) {
         qWarning("Error: start without corresponding stop");

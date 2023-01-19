@@ -71,6 +71,13 @@ public class QtThread {
         m_qtThread.start();
     }
 
+    public void startThread() {
+        if (m_exit) {
+            m_exit = false;
+            m_qtThread.start();
+        }
+    }
+
     public void post(final Runnable runnable) {
         synchronized (m_qtThread) {
             m_pendingRunnables.add(runnable);
